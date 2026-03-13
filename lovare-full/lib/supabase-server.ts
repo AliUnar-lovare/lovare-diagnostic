@@ -1,12 +1,7 @@
-// ============================================================
-// SUPABASE SERVER CLIENTS — server only, never import in Client Components
-// ============================================================
-
-import { createServerClient } from '@supabase/ssr'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Server-side Supabase client (use in Server Components / API routes)
 export function createServerSupabaseClient() {
   const cookieStore = cookies()
   return createServerClient(
@@ -15,14 +10,13 @@ export function createServerSupabaseClient() {
     {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value },
-        set(name: string, value: string, options: Record<string, unknown>) { cookieStore.set({ name, value, ...options }) },
-        remove(name: string, options: Record<string, unknown>) { cookieStore.set({ name, value: '', ...options }) },
+        set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }) },
+        remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: '', ...options }) },
       },
     }
   )
 }
 
-// Service role client (admin operations — server only, never expose to client)
 export function createAdminClient() {
   const cookieStore = cookies()
   return createServerClient(
@@ -31,14 +25,13 @@ export function createAdminClient() {
     {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value },
-        set(name: string, value: string, options: Record<string, unknown>) { cookieStore.set({ name, value, ...options }) },
-        remove(name: string, options: Record<string, unknown>) { cookieStore.set({ name, value: '', ...options }) },
+        set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }) },
+        remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: '', ...options }) },
       },
     }
   )
 }
 
-// Middleware helper for auth refresh
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } })
   const supabase = createServerClient(
@@ -46,13 +39,13 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) { return request.cookies.get(name)?.value },
-        set(name, value, options) {
+        get(name: string) { return request.cookies.get(name)?.value },
+        set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options })
           response = NextResponse.next({ request: { headers: request.headers } })
           response.cookies.set({ name, value, ...options })
         },
-        remove(name, options) {
+        remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({ request: { headers: request.headers } })
           response.cookies.set({ name, value: '', ...options })
