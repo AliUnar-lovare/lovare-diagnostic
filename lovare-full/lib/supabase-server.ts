@@ -15,8 +15,8 @@ export function createServerSupabaseClient() {
     {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value },
-        set(name, value, options) { cookieStore.set({ name, value, ...options }) },
-        remove(name, options) { cookieStore.set({ name, value: '', ...options }) },
+        set(name: string, value: string, options: Record<string, unknown>) { cookieStore.set({ name, value, ...options }) },
+        remove(name: string, options: Record<string, unknown>) { cookieStore.set({ name, value: '', ...options }) },
       },
     }
   )
@@ -31,8 +31,8 @@ export function createAdminClient() {
     {
       cookies: {
         get(name: string) { return cookieStore.get(name)?.value },
-        set(name, value, options) { cookieStore.set({ name, value, ...options }) },
-        remove(name, options) { cookieStore.set({ name, value: '', ...options }) },
+        set(name: string, value: string, options: Record<string, unknown>) { cookieStore.set({ name, value, ...options }) },
+        remove(name: string, options: Record<string, unknown>) { cookieStore.set({ name, value: '', ...options }) },
       },
     }
   )
